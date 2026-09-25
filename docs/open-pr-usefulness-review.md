@@ -1,3 +1,43 @@
+# Актуализация на 25 сентября 2026 года
+
+GitHub snapshot: **106 открытых PR**, включая 5 draft. Полный список заголовков
+и ссылок сохранён в [инвентаризации](open-pr-inventory-20260925.md). Метаданные
+проверены для всего списка; diff адресно просмотрен для #798, #799, #812, #820,
+#822, описание и список файлов — для #811 и #818. Это не проверка всех 106 веток.
+
+Локальный rebase `9185f41` поверх `upstream/main` `5a705dd` **не собирается**.
+Первоначальные незакоммиченные resource changes сохранены в `4ac718a`; частичная
+стыковка интерфейсов — `84efac8`. Полный диагностический native build дал 289
+уникальных compiler error diagnostics в 29 файлах; ряд translation units упёрся
+в compiler error limit. Это не 289 независимых дефектов. Группы причин: старые
+SPIR-V builder/emitter и новые типы upstream; потерянные декларации cooperative
+wave64/DPP8/F64; переход runtime snapshots на указатели; renderer/cache API;
+оставшиеся старые интерфейсы в тестах. Все логи находятся в
+`_Build/merge-validation-20260925/`.
+
+| PR | Решение для текущей интеграции | Проверка / ограничение |
+| --- | --- | --- |
+| [#812](https://github.com/KytyPS5/KytyPS5/pull/812) | Перенесён целиком отдельный commit `31ef12d49e` как `cab18b8` | README: название issue template, CMake minimum, сборка без Qt соответствуют текущим файлам |
+| [#798](https://github.com/KytyPS5/KytyPS5/pull/798) | Перенесён только независимый `266f6bb9e5` как `cdc0a50` | `save_data_memory_tests` добавлен в `kyty_tests`; native target build и запуск PASS |
+| [#799](https://github.com/KytyPS5/KytyPS5/pull/799) | Полезный следующий diagnostic-only кандидат `31cdf25244` | Полный PR включает сетевые изменения #797; целиком не переносить без их отдельной проверки |
+| [#811](https://github.com/KytyPS5/KytyPS5/pull/811) | Отложен до восстановления resource baseline | Есть локальные candidate branches с cherry-picks, но их наличие не доказывает завершённую интеграцию; опубликованное описание не содержит Windows validation |
+| [#818](https://github.com/KytyPS5/KytyPS5/pull/818) | Разделить Windows long paths и shader offset proof | Две разные подсистемы; нужны отдельные регрессии, включение целиком не обосновано |
+| [#820](https://github.com/KytyPS5/KytyPS5/pull/820) | Полезный кандидат после восстановления native memory harness | Direct allocation zero-fill и pool expansion; supplied test покрывает direct reuse, pool/reallocation boundaries требуют проверки |
+| [#822](https://github.com/KytyPS5/KytyPS5/pull/822) | Отложен | Меняет cadence блокирующего AudioOut; воспроизводимой timing regression в diff нет |
+| [#797](https://github.com/KytyPS5/KytyPS5/pull/797), [#751](https://github.com/KytyPS5/KytyPS5/pull/751), [#508](https://github.com/KytyPS5/KytyPS5/pull/508) | Сравнить как альтернативные network fixes | #798/#799 тащат историю #797. Не складывать несколько исправлений PEEK/WAITALL без native socket regression |
+| [#603](https://github.com/KytyPS5/KytyPS5/pull/603), [#447](https://github.com/KytyPS5/KytyPS5/pull/447) | Вернуться после исправления сборки | Расширение CI полезно, но не исправляет несовместимые исходники |
+| [#780](https://github.com/KytyPS5/KytyPS5/pull/780), [#767](https://github.com/KytyPS5/KytyPS5/pull/767), [#715](https://github.com/KytyPS5/KytyPS5/pull/715), [#654](https://github.com/KytyPS5/KytyPS5/pull/654) | Сейчас не вливать крупными пакетами | Заголовки/metadata triage; дополнительный shader/renderer bundle затруднит локализацию уже доказанного integration RED |
+
+Изменения опубликованы только как WIP-кандидат: это не готовность #497 к merge.
+Новый игровой запуск не выполнялся. Историческое доказательство loading spinner
+не переносится на несобирающуюся новую ревизию. Следующий шаг — выбрать между
+полным переносом старых shared mechanisms на новые upstream interfaces и
+возвратом к последнему собиравшемуся checkpoint с выборочными PR.
+
+---
+
+## Исторический обзор 8–9 сентября
+
 Дата обзора: **8 сентября 2026 года**
 
 # Открытые PR KytyPS5: что полезно для текущего bring-up

@@ -1,5 +1,46 @@
 # Ghost of Yōtei в KytyPS5 на Windows: прогресс и план запуска
 
+## Пересборка после rebase: 25 сентября 2026
+
+**Native Windows build: FAIL. CPU resource regression: FAIL. GPU regression,
+новый rendered frame, menu и gameplay на этой ревизии: PENDING.**
+
+Проверена ветка после rebase `9185f41`, содержащая `upstream/main` `5a705dd`.
+Входные незакоммиченные resource changes сохранены в `4ac718a`, ограниченная
+попытка согласования интерфейсов — в `84efac8`. Исходники замораживались на
+каждую native сборку; сборки выполнялись последовательно через
+`_Build/windows-local.cmd`, clang-cl/Ninja/Release, launcher включён.
+
+Первая команда `build` обнаружила выключенный launcher в старом CMake cache;
+`configure` с launcher ON устранил только эту проблему окружения. Повторная
+сборка выявила несовместимый resource/texture code. После частичного исправления
+`integration-inventory` (`launcher kyty_tests --parallel 16 -- -k 0`) завершился
+FAIL: 289 уникальных diagnostics в 29 файлах, сгруппированных по shared causes
+в `docs/open-pr-usefulness-review.md`. Error limit означает, что список не
+гарантированно исчерпывающий. Бинарник эмулятора этой ревизии не получен.
+
+Собранный `resource_tracking_tests.exe` дал самостоятельный CPU RED:
+`compute buffer fill: fill proof accepted an unsafe store or missed the real GTA3 clear`.
+Это новый текущий blocker; старые результаты 46/51 ниже не являются результатами
+данной ревизии. Отдельный `save_data_memory_tests` построен и выполнен: PASS.
+
+Артефакты: `_Build/merge-validation-20260925/initial-worktree.patch`,
+`initial-reconfigure-build.stdout.log`, `integration-build-1.stdout.log`,
+`integration-build-2.stdout.log`, `integration-inventory.stdout.log`,
+`unique-errors.txt`, `error-summary.txt`, `resource-tracking-first.stderr.log`,
+`save-data-build.stdout.log`, `save-data-test-independent.stdout.log`.
+Для каждой native команды runner сохраняет stdout, stderr и JSON exit status;
+лимит build — 1800 секунд, CPU test — 45/60 секунд. GPU и игра не запускались.
+
+Полезные независимые изменения #812 и test-aggregate commit из #798 перенесены
+в `wip/yotei-upstream-20260925`. Старая опубликованная ветка не переписывается
+force-push. Следующее обязательное действие — восстановить согласованность
+shader/renderer interfaces и получить GREEN существующих регрессий либо
+продолжить от предыдущего проверенного checkpoint с выборочной интеграцией.
+
+## Исторические результаты до rebase
+
+
 Обновлено **9 сентября 2026 года**. Игра: **Ghost of Yōtei, PPSA26344**.
 Рабочая ветка — `yotei-windows-bringup` в локальном fork `fxpw/KytyPS5`.
 
