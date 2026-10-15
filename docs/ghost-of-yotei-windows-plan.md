@@ -1,6 +1,39 @@
 # Ghost of Yōtei: active integration and session resume
 
-## Current checkpoint: DLSS actually evaluates and merges into the visible game world, 2026-10-15
+## Current checkpoint: active DLSS, restored compute batching, matched FPS gain, 2026-10-15
+
+Retained optimization is the local launch profile: KYTY_COMPUTE_CHAIN=1 in
+both `_Build/analysis/yotei-dlss-activation-20261015/start-yotei-dlss.ps1` and
+`_Build/analysis/yotei-dlss-live-20261015/run-live-fps.ps1`. They had explicitly
+disabled an existing default. Both declared temporal passes retain hard
+boundaries. Production is identical toccd7b8a7; installed coreFC3467A8 remains
+at the activation runtime. HEAD6f9c7972 reverts experimental batchingbe078be3.
+
+Matched20s title windows require frame>=400 AND completedDLSS>=200, after the
+player/HUD appears at the same village position. Same coreFC3467A8:
+OFF203954/5e2960 mean2.88947FPS; ON204324/38e710 mean3.51579; repeated
+ON205500/1d4e7f mean3.61053. Gain21.68–24.95%, active native DLSS and visible
+player/world/HUD, exit0/no guards. Root viewed all phase captures. This is a
+short measured improvement, not stable60FPS or complete graphical correctness.
+
+GPU_CORE1 gives3.57368 (+1.65% over firstON), so affinity is omitted. Native
+constant-batching independent RED/GREEN proves exact snapshot values with
+2→1 submits, but game205226/724144 gives3.66111 versus repeat control3.61053
+(only1.40%); no separate speedup is established. Reverted from production,
+preserved local commit/patch/tests/logs for future work. See [measurements and
+next mechanisms](yotei-dlss-performance-2026-10-15.md). Next target is locally
+measured superseded optional eager readbacks; do not skip required publication
+or guess consumption from clean CPU reads. RGB pruning/private view pooling
+remain unimplemented proposals, not measured gains.
+
+All test/game workers are closed; no push/post. WSL shutdown was requested.
+Preserve original game/save/cache/captures and user untracked prefetch fixture.
+IMPORTANT: installed activation/runtime is restoredFC3467A8 and production
+matches it; `_Build/windows-integration` still holds experimentalDFD05FF5 and
+must be rebuilt before a later install. Latest run205500/1d4e7f uses the restored
+historical executable with explicit SHA/provenance, not the discarded experiment.
+
+## Previous checkpoint: DLSS actually evaluates and merges into the visible game world, 2026-10-15
 
 Source0a02979a retires early-device startup, enables native host ASLR and keeps
 ordinary Memory-first initialization. CoreFED1A83B run200706/5b82c5 initializes
